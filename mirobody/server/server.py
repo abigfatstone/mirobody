@@ -133,13 +133,14 @@ class Server:
                 if firebase_project_id and not isinstance(firebase_project_id, str):
                     firebase_project_id = None
 
-        self._webpage_config.update(
-            {
-                "__IS_QR_LOGIN_ON__"        : True if qr_login_url else False,
-                "__IS_GOOGLE_LOGIN_ON__"    : True if google_client_id or firebase_project_id else False,
-                "__IS_APPLE_LOGIN_ON__"     : True if apple_client_id else False
-            }
-        )
+        if "__IS_QR_LOGIN_ON__" not in self._webpage_config:
+            self._webpage_config["__IS_QR_LOGIN_ON__"] = True if qr_login_url else False
+
+        if "__IS_GOOGLE_LOGIN_ON__" not in self._webpage_config:
+            self._webpage_config["__IS_GOOGLE_LOGIN_ON__"] = True if google_client_id or firebase_project_id else False
+
+        if "__IS_APPLE_LOGIN_ON__" not in self._webpage_config:
+            self._webpage_config["__IS_APPLE_LOGIN_ON__"] = True if apple_client_id else False
 
         #-------------------------------------------------
 
