@@ -1102,7 +1102,7 @@ class FileParserDatabaseService:
             ) AS data_distribution
             WHERE category IS NOT NULL 
               AND TRIM(category) != ''
-              and record count>0
+              and record_count>0
             ORDER BY 3 DESC, 2 DESC
             """
 
