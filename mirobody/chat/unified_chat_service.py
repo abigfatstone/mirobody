@@ -88,6 +88,9 @@ class UnifiedChatService:
             "provider"              : kwargs.get("provider", ""),
             "prompt_name"           : prompt_name,
             "tools"                 : kwargs.get("tools", None),
+            "context_strategy"      : kwargs.get("context_strategy", ""),
+            "context_max_tokens"    : kwargs.get("context_max_tokens", 0),
+            "context_turn_max_tokens": kwargs.get("context_turn_max_tokens", 0),
         }
 
         #-------------------------------------------------

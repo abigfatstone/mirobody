@@ -408,7 +408,10 @@ class ChatProtocolAdapter(ABC):
             'token': params.token or '',
             'language': params.language or '',
             'timezone': params.timezone or '',
-            'provider': params.provider
+            'provider': params.provider,
+            'context_strategy': getattr(params, 'context_strategy', ''),
+            'context_max_tokens': getattr(params, 'context_max_tokens', 0),
+            'context_turn_max_tokens': getattr(params, 'context_turn_max_tokens', 0),
         }
     
 #-----------------------------------------------------------------------------

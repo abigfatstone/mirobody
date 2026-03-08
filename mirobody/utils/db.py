@@ -1,4 +1,4 @@
-import logging, time, re
+import logging, time
 
 from sqlalchemy import text
 
@@ -56,7 +56,7 @@ async def execute_query(
                 ret = {"record_count": field_list_size}
 
             # Insert one row.
-            elif "returning" in lower_query:
+            elif cur.returns_rows:
                 row = cur.fetchone()
                 if row is not None:
                     ret = dict(row._mapping) if hasattr(row, "_mapping") else dict(row)
@@ -66,7 +66,7 @@ async def execute_query(
             else:
                 ret = {"record_count": cur.rowcount}
 
-        elif not re.match("^(update|delete|insert|create|drop|alter|truncate).*", lower_query):
+        elif cur.returns_rows:
 
             rows = cur.fetchall()
             sqlDesc = cur.keys()

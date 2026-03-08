@@ -60,6 +60,9 @@ class ChatStreamRequest:
         token               : str = "",
         language            : str = "",
         timezone            : str = "",
+        context_strategy    : str = "",
+        context_max_tokens  : int = 0,
+        context_turn_max_tokens: int = 0,
 
         scene               : str | None = None
     ):
@@ -85,6 +88,9 @@ class ChatStreamRequest:
         self.token          = token
         self.language       = language
         self.timezone       = timezone
+        self.context_strategy = context_strategy
+        self.context_max_tokens = context_max_tokens
+        self.context_turn_max_tokens = context_turn_max_tokens
 
         self.scene          = scene
         

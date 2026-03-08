@@ -164,8 +164,8 @@ class HTTPChatAdapter(ChatProtocolAdapter):
                 question_msg_id = saved_msg_id
             params.question_id = question_msg_id
             
-            # Keep full same-session history for Gemini 3 providers used by Ambodi.
-            if params.agent == "Ambodi" and params.provider in {"gemini-3-pro", "gemini-3.1-pro-openrouter"}:
+            # Ambodi owns its own plugin-based context strategies and needs raw history here.
+            if params.agent == "Ambodi":
                 compressed_messages = messages
             else:
                 compressed_messages = compress_messages(params.agent, messages, 4000)
@@ -300,7 +300,7 @@ class HTTPChatAdapter(ChatProtocolAdapter):
                 accumulator.flush_all()
                 accumulator.element_list.append(chunk)
                 return True  # Send to frontend
-            
+
             # Dictionary dispatch for O(1) type lookup instead of O(n) if-elif chain
             # All chunk types are handled here with consistent logic
             chunk_handlers = {
