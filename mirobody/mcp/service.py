@@ -286,11 +286,11 @@ class McpService:
                     # Whitelist mode: only include allowed tools
                     tools = [tool for tool in self._tool_descriptions if tool.get("name") in allowed_tools]
                 else:
-                    tools = []
+                    tools = list(self._tool_descriptions)
 
                 # Apply blacklist (higher priority, can override whitelist)
                 if disallowed_tools:
-                    tools = [tool for tool in (tools if tools else self._tool_descriptions) if tool.get("name") not in disallowed_tools]
+                    tools = [tool for tool in tools if tool.get("name") not in disallowed_tools]
 
                 return jsonrpc_result(
                     id=id,
