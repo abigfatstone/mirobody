@@ -21,6 +21,8 @@ from ..user import (
 )
 from ..mcp import McpService
 from ..chat import ChatService
+from ..utils.config import safe_read_cfg
+from ..utils.config.storage.constants import DEFAULT_LOCAL_CHARTS_PATH
 from ..utils.redis_compat import AsyncRedisClient
 
 #-----------------------------------------------------------------------------
@@ -240,9 +242,8 @@ class Server:
 
         self._routes.append(Route(f"{uri_prefix}/api/health", endpoint=self.health_check_handler, methods=["GET"]))
 
-        # Add static file serving for chart images
-        # Use standard chart directory: ./.theta/mcp/charts
-        charts_dir = "./.theta/mcp/charts"
+        # Add static file serving for chart images.
+        charts_dir = safe_read_cfg("LOCAL_CHARTS_DIR") or DEFAULT_LOCAL_CHARTS_PATH
         if os.path.exists(charts_dir):
             self._routes.append(Mount("/charts", app=StaticFiles(directory=charts_dir)))
             logging.info(f"Chart static files enabled: {charts_dir}")
