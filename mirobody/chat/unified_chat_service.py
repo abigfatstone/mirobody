@@ -75,6 +75,8 @@ class UnifiedChatService:
         agent_kwargs = {
             # User.
             "user_id"               : query_user_id,
+            "query_user_id"         : query_user_id,
+            "prompt_owner_user_id"  : user_id or query_user_id,
             "session_id"            : kwargs.get("session_id", "") or kwargs.get("trace_id", ""),
             "language"              : kwargs.get("language", "en"),
             "timezone"              : kwargs.get("timezone", "America/Los_Angeles"),
@@ -87,6 +89,7 @@ class UnifiedChatService:
             # LLM.
             "provider"              : kwargs.get("provider", ""),
             "prompt_name"           : prompt_name,
+            "question_id"           : kwargs.get("question_id", ""),
             "tools"                 : kwargs.get("tools", None),
             "context_strategy"      : kwargs.get("context_strategy", ""),
             "context_max_tokens"    : kwargs.get("context_max_tokens", 0),

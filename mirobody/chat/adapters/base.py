@@ -401,6 +401,7 @@ class ChatProtocolAdapter(ABC):
             'enable_mcp': bool(params.enable_mcp),
             'trace_id': params.trace_id,
             'session_id': self.get_session_id(params),
+            'question_id': params.question_id,
             'group_id': params.group_id,
             'file_list': params.file_list,
             'files_data': getattr(params, 'files_data', None),  # Pass downloaded file content

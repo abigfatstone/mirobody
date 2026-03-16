@@ -181,9 +181,14 @@ class ChatService:
             return json_response_with_code(disable_log=True)
         
         system_prompts = []
-        options = global_config().get_options_for_agent("deep")
-        if isinstance(options, dict) and "prompt_templates" in options:
-            system_prompts = [{"name": name} for name in options["prompt_templates"]]
+        agent_name = str(request.query_params.get("agent", "") or "").strip() or "Ambodi"
+        options = global_config().get_options_for_agent(agent_name)
+        prompt_templates = options.get("prompt_templates", {}) if isinstance(options, dict) else {}
+        if isinstance(prompt_templates, dict):
+            system_prompts = [
+                {"name": name, "prompt": str(prompt_text or "")}
+                for name, prompt_text in prompt_templates.items()
+            ]
 
         user_prompts = []
         user_id, err = self._token_validator.verify_http_token(request)

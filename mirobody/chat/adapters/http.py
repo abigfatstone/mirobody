@@ -36,13 +36,14 @@ class ChunkAccumulator:
         acc.reply_chunks.append("world")
         acc.flush_reply()  # Creates {"type": "reply", "content": "Hello world"}
     """
-    __slots__ = ('reply_chunks', 'thinking_chunks', 'element_list', 'stream_completed')
+    __slots__ = ('reply_chunks', 'thinking_chunks', 'element_list', 'stream_completed', 'stream_cancelled')
     
     def __init__(self):
         self.reply_chunks = []
         self.thinking_chunks = []
         self.element_list = []
         self.stream_completed = False
+        self.stream_cancelled = False
     
     def flush_reply(self) -> bool:
         """
@@ -290,6 +291,12 @@ class HTTPChatAdapter(ChatProtocolAdapter):
                 """Handle end chunk: mark stream completed, don't send to frontend yet"""
                 accumulator.stream_completed = True
                 return False  # Don't send to frontend (will be sent after save)
+
+            def handle_cancelled(chunk):
+                """Handle server-side cancellation: mark stream complete but skip persistence."""
+                accumulator.flush_all()
+                accumulator.stream_cancelled = True
+                return False
             
             def handle_heartbeat(chunk):
                 """Handle heartbeat chunk: only send to frontend, no accumulation"""
@@ -307,6 +314,7 @@ class HTTPChatAdapter(ChatProtocolAdapter):
                 "reply": handle_reply,
                 "thinking": handle_thinking,
                 "end": handle_end,
+                "cancelled": handle_cancelled,
                 "heartbeat": handle_heartbeat,
             }
             
@@ -331,7 +339,7 @@ class HTTPChatAdapter(ChatProtocolAdapter):
                 element_list = accumulator.finalize()
                 
                 # Save response when stream completed and we have reply_id
-                if accumulator.stream_completed and reply_id:
+                if accumulator.stream_completed and reply_id and not accumulator.stream_cancelled:
                     params = context['params']
                     try:
                         await self.save_assistant_response(
@@ -379,6 +387,8 @@ class HTTPChatAdapter(ChatProtocolAdapter):
                         # Even if save fails, send 'end' to avoid frontend hanging
                 elif not reply_id:
                     logging.warning("⚠️ Missing reply_id, skip saving")
+                elif accumulator.stream_cancelled:
+                    logging.info("⏹️ Stream cancelled before persistence (reply_id=%s)", reply_id)
                 
                 # Send 'end' chunk only after saving is complete (or if no save needed)
                 if accumulator.stream_completed:
